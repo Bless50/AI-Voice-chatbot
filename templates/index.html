@@ -14,7 +14,7 @@
         body, html {
             height: 100%;
             margin: 0;
-            background: url('/static/images/wave.jpg') no-repeat center center fixed;
+            background: url('static/images/wave.jpg') no-repeat center center fixed;
             background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
@@ -27,7 +27,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Hide any wave overflow */
+            overflow: hidden;
         }
 
         .mic-container {
@@ -37,7 +37,7 @@
             position: relative;
             height: 200px;
             width: 200px;
-            z-index: 10; /* Keep mic above wave animation */
+            z-index: 10;
         }
 
         .mic {
@@ -49,25 +49,23 @@
             margin-top: 20px;
         }
 
-        /* Thin waveform signal animation */
         .wave-animation {
             position: absolute;
             top: 50%;
             left: 0;
             transform: translateY(-50%);
             width: 100%;
-            height: 3px; /* Thin wave signal */
+            height: 3px;
             background: none;
-            overflow: hidden; /* Hide any overflow */
-            display: none; /* Hidden by default */
-            z-index: 5; /* Behind the microphone */
+            overflow: hidden;
+            display: none;
+            z-index: 5;
         }
 
-        /* Wave signal */
         .wave-line {
             position: absolute;
             height: 100%;
-            width: 200%; /* Extend width for animation */
+            width: 200%;
             background: repeating-linear-gradient(
                 to right,
                 white 0%,
@@ -78,14 +76,9 @@
             animation: moveWave 2s linear infinite;
         }
 
-        /* Animation keyframes for the waveform */
         @keyframes moveWave {
-            from {
-                transform: translateX(0);
-            }
-            to {
-                transform: translateX(-50%);
-            }
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
         }
 
         .mic-active {
@@ -94,32 +87,35 @@
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        #status-messages {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 300px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
 
     <div class="content">
-        <!-- Wave Animation -->
         <div id="wave" class="wave-animation">
-            <div class="wave-line"></div> <!-- Thin wave line -->
+            <div class="wave-line"></div>
         </div>
 
-        <!-- Microphone Icon -->
         <div class="mic-container">
             <i id="mic" class="bi bi-mic-fill mic"></i>
         </div>
 
-        <!-- Buttons -->
         <div class="buttons">
             <button id="startBtn" class="btn btn-success btn-lg">Start</button>
             <button id="stopBtn" class="btn btn-danger btn-lg" disabled>Stop</button>
@@ -130,10 +126,13 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 
     <!-- Custom JS -->
     <script>
-         const socket = io();
+        const socket = io();
         const statusMessages = document.getElementById('status-messages');
 
         socket.on('status', function(data) {
@@ -143,21 +142,17 @@
             statusMessages.scrollTop = statusMessages.scrollHeight;
         });
 
-
-
         const mic = document.getElementById('mic');
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
         const wave = document.getElementById('wave');
 
-        // Start button click handler
         startBtn.addEventListener('click', () => {
             startBtn.disabled = true;
             stopBtn.disabled = false;
-            mic.classList.add('mic-active');  // Activate mic animation
-            wave.style.display = 'block';  // Show and start wave animation
+            mic.classList.add('mic-active');
+            wave.style.display = 'block';
 
-            // Start your Python app or voice recording logic here
             fetch('/start_chat')
             .then(response => response.json())
             .then(data => {
@@ -166,14 +161,12 @@
             .catch(err => console.error(err));
         });
 
-        // Stop button click handler
         stopBtn.addEventListener('click', () => {
             stopBtn.disabled = true;
             startBtn.disabled = false;
-            mic.classList.remove('mic-active');  // Stop mic animation
-            wave.style.display = 'none';  // Stop and hide wave animation
+            mic.classList.remove('mic-active');
+            wave.style.display = 'none';
 
-            // Stop your Python app or voice recording logic here
             fetch('/stop_chat')
             .then(response => response.json())
             .then(data => {
@@ -184,4 +177,3 @@
     </script>
 </body>
 </html>
-
