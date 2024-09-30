@@ -46,13 +46,15 @@ agent = ReActAgent.from_tools(
     verbose=True,
     
 )
-
-
 # Update the agent's prompts with your custom prompt
 agent.update_prompts({"agent_worker:system_prompt": react_system_prompt})
 
 #function to generate the response from the model
 def get_response(user_input):
     """Get response from chat engine."""
-    response = agent.chat(user_input)
-    return response
+    try:
+        response = agent.chat(user_input)
+        return str(response)
+    except Exception as e:
+        print(f"Error in get_response: {e}")
+        return "I'm sorry, I encountered an error while processing your request."

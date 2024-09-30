@@ -8,6 +8,7 @@ import string
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+socketio = SocketIO(app)  # Initialize SocketIO
 
 # Global variable to control the chat session
 chat_active = False
@@ -15,7 +16,7 @@ chat_active = False
 def init_tts_engine():
     """Initialize and configure the TTS engine."""
     engine = pyttsx3.init()
-    engine.setProperty('rate', 150)  # Speed of speech
+    engine.setProperty('rate', 160)  # Speed of speech
     engine.setProperty('volume', 0.8)  # Volume (0.0 to 1.0)
     return engine
 
@@ -60,8 +61,12 @@ def chat_session():
 
         print(f"Assistant: {response_text}")
 
-        # Speak the response
-        speak_response(tts_engine, response_text)
+        try:
+            # Speak the response
+            speak_response(tts_engine, response_text)
+        except Exception as e:
+            print(f"Error in chat_session: {e}")
+            speak_response(tts_engine, "I'm sorry, an error occurred. Please try again.")
 
         print("Response complete. Ready for the next input.\n")
         time.sleep(0.3)  # Add a short delay before next recording
@@ -91,4 +96,4 @@ def stop_chat():
     return jsonify({"status": "No active chat to stop"}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
