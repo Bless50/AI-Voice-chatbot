@@ -20,6 +20,7 @@ google-generativeai = ">=0.3.0"
 matplotlib = "^3.9.2"
 llama-index-core = "^0.11.14"
 flask-socketio = "^5.3.7"
+modal = "^0.64.154"
 
 
 [build-system]
